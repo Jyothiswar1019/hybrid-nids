@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Result – Hybrid NIDS</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        /* extra inline style to force visibility */
+        .result-box {
+            background: #f8f9fa;
+            border-radius: 20px;
+            padding: 30px;
+            margin: 20px 0;
+            border: 2px solid #0d6efd;
+            text-align: center;
+        }
+        .prediction {
+            font-size: 56px !important;
+            font-weight: 900 !important;
+            letter-spacing: 1px;
+        }
+        .prediction.known { color: #dc3545; }  /* red for attack */
+        .prediction.anomaly { color: #fd7e14; } /* orange for zero-day */
+        .prediction.normal { color: #198754; }  /* green for normal */
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔒 Hybrid NIDS</h1>
+            <span class="badge">Result</span>
+        </div>
+
+        <!-- ========== PREDICTION – BIG & CLEAR ========== -->
+        <div class="result-box" style="border: 4px solid 
+            {% if pred_type == 'known' %}#dc3545{% elif pred_type == 'anomaly' %}#fd7e14{% else %}#198754{% endif %};
+            background: 
+            {% if pred_type == 'known' %}#f8d7da{% elif pred_type == 'anomaly' %}#fff3cd{% else %}#d1e7dd{% endif %};">
+            
+            <div style="font-size: 16px; color: #495057; font-weight: 600; letter-spacing: 2px; text-transform: uppercase;">
+                🎯 Prediction Result
+            </div>
+            <div class="prediction {{ pred_type }}" style="font-size: 60px; font-weight: 900; margin: 10px 0;">
+                {{ prediction }}
+            </div>
+            <div style="font-size: 22px; margin-top: 5px;">
+                Confidence: <strong>{{ "%.2f"|format(confidence) }}</strong>
+            </div>
+            <div style="display: inline-block; padding: 6px 28px; border-radius: 30px; font-size: 16px; font-weight: 700; margin-top: 12px; 
+                background: 
+                {% if pred_type == 'known' %}#dc3545{% elif pred_type == 'anomaly' %}#fd7e14{% else %}#198754{% endif %}; 
+                color: white;">
+                {{ '🔴 Known Attack' if pred_type == 'known' else '🟠 Zero‑Day Anomaly' if pred_type == 'anomaly' else '🟢 Normal Traffic' }}
+            </div>
+        </div>
+
+        <!-- Input Features Table -->
+        <h2 style="margin-top: 30px; font-size: 20px;">📊 Input Features</h2>
+        <div class="table-wrap">
+            <table>
+                <tr><th>Feature</th><th>Value</th></tr>
+                {% for key, value in input_data.items() %}
+                <tr><td><strong>{{ key }}</strong></td><td>{{ value }}</td></tr>
+                {% endfor %}
+            </table>
+        </div>
+
+        <!-- Big button to test another -->
+        <div style="text-align: center; margin-top: 30px;">
+            <a href="/" style="display: inline-block; padding: 14px 50px; background: linear-gradient(135deg, #0d6efd, #6610f2); color: white; border-radius: 40px; font-weight: 700; text-decoration: none; font-size: 18px; box-shadow: 0 6px 20px rgba(13,110,253,0.4);">
+                🔄 Analyze Another Sample
+            </a>
+        </div>
+
+        <div class="footer">&copy; 2026 Hybrid NIDS | Zero‑Day Detection</div>
+    </div>
+</body>
+</html>

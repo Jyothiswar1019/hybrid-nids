@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Hybrid NIDS - Zero‑Day Detection</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔒 Hybrid NIDS</h1>
+            <span class="badge">Zero‑Day Ready</span>
+        </div>
+
+        <p class="subtitle">
+            Upload a <strong>single‑row CSV</strong> file <em>or</em> enter the network flow features manually.
+            The system will detect known attacks and flag zero‑day anomalies.
+        </p>
+
+        {% if error %}
+            <div class="error">{{ error|safe }}</div>
+        {% endif %}
+
+        <!-- Option 1: Upload CSV -->
+        <div class="option-section">
+            <h2>📁 Upload CSV (1 row)</h2>
+            <form method="POST" enctype="multipart/form-data" class="upload-area">
+                <input type="file" name="file" accept=".csv" required>
+                <button type="submit">Upload & Predict</button>
+            </form>
+            <small style="color: #6c757d;">
+                Your CSV must have all {{ features|length }} feature columns (exactly one row).<br>
+                <strong>Tip:</strong> Flag must be UPPERCASE (e.g., SF, S0, REJ)
+            </small>
+        </div>
+
+        <hr>
+
+        <!-- Option 2: Manual Input -->
+        <div class="option-section">
+            <h2>✏️ Enter Manually</h2>
+            <form method="POST" id="manualForm">
+                <div class="form-grid">
+                    {% for feat in features %}
+                    <div class="form-item">
+                        <label for="{{ feat }}">
+                            {{ feat }}
+                            {% if field_info[feat].type == 'categorical' %}
+                                <span class="required-badge">required</span>
+                            {% endif %}
+                        </label>
+                        <input 
+                            type="text" 
+                            id="{{ feat }}" 
+                            name="{{ feat }}" 
+                            placeholder="{{ field_info[feat].placeholder }}"
+                            title="{{ field_info[feat].error }}"
+                            {% if field_info[feat].type == 'categorical' and feat == 'flag' %}
+                            pattern="[A-Z0-9]+"
+                            oninput="this.value = this.value.toUpperCase()"
+                            {% endif %}
+                            required
+                        >
+                        {% if field_info[feat].examples %}
+                            <small class="hint">Examples: {{ field_info[feat].examples|join(', ') }}</small>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+                
+                <div class="form-actions">
+                    <button type="submit" class="btn-submit">🔍 Analyze</button>
+                    <button type="reset" class="btn-reset">🗑️ Clear All</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="footer">
+            &copy; 2026 Hybrid NIDS | Powered by Machine Learning
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const flagInput = document.getElementById('flag');
+            if (flagInput) {
+                flagInput.addEventListener('input', function() {
+                    this.value = this.value.toUpperCase();
+                });
+                document.getElementById('manualForm').addEventListener('submit', function(e) {
+                    if (flagInput) {
+                        flagInput.value = flagInput.value.toUpperCase();
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>
