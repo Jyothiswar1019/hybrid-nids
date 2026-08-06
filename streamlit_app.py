@@ -14,7 +14,6 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# --- Hide Streamlit default elements ---
 hide_streamlit_style = """
     <style>
         /* Hide the entire header (the empty bar) */
@@ -44,7 +43,6 @@ hide_streamlit_style = """
     </style>
 """
 st.markdown(hide_streamlit_style, unsafe_allow_html=True)
-
 # --- Custom CSS for dark theme + dropdown styling ---
 st.markdown("""
 <style>
@@ -297,7 +295,7 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-st.markdown('<p class="subtitle">Enter the network flow features manually. <strong>Service</strong> and <strong>Flag</strong> are dropdown menus with placeholders – select from the list.</p>', unsafe_allow_html=True)
+# --- REMOVED THE INSTRUCTIONAL TEXT HERE ---
 
 error_placeholder = st.empty()
 
