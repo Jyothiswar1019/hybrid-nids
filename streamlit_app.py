@@ -195,7 +195,7 @@ elif mode == "🌐 Live Demo":
     st.info("Make sure your Local Sniffer agent and Bridge server are running, and ngrok is active.")
     
     # IMPORTANT: REPLACE THIS WITH YOUR NGROK URL (e.g., https://xxxx.ngrok-free.app)
-    BRIDGE_URL = "https://xxxx.ngrok-free.app/get_features" 
+    BRIDGE_URL = "http://localhost:8000/get_features" 
     
     col1, col2 = st.columns([8, 2])
     with col2:
