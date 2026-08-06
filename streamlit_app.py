@@ -17,20 +17,30 @@ st.set_page_config(
 # --- Hide Streamlit default elements ---
 hide_streamlit_style = """
     <style>
+        /* Hide the entire header (the empty bar) */
+        header[data-testid="stHeader"] {
+            display: none !important;
+        }
+        /* Remove the top padding/margin from the main app view */
+        .stAppViewContainer {
+            padding-top: 0 !important;
+        }
+        /* Remove the default top margin from the block container */
+        .block-container {
+            padding-top: 0 !important;
+            padding-bottom: 1rem !important;
+        }
+        /* Hide sidebar, deploy button, etc. */
         #MainMenu {visibility: hidden;}
-        header {visibility: hidden;}
         footer {visibility: hidden;}
-        .stApp {margin-top: -50px;}
         .stDeployButton {display: none;}
         .stSidebar {display: none;}
         section[data-testid="stSidebar"] {display: none !important;}
-        .st-emotion-cache-1v0mbdj {padding-top: 0;}
-        .stApp > div:first-child {background: transparent;}
-        .st-emotion-cache-1r6slb0 {background: transparent;}
-        .block-container {
-            padding-top: 1rem !important;
-            padding-bottom: 1rem !important;
-        }
+        .stApp {margin-top: 0 !important;}
+        .st-emotion-cache-1v0mbdj {padding-top: 0 !important;}
+        .st-emotion-cache-18ni7ap {padding-top: 0 !important;}
+        .stApp > div:first-child {background: transparent !important;}
+        .st-emotion-cache-1r6slb0 {background: transparent !important;}
     </style>
 """
 st.markdown(hide_streamlit_style, unsafe_allow_html=True)
