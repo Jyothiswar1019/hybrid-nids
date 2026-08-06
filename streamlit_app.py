@@ -35,7 +35,7 @@ hide_streamlit_style = """
 """
 st.markdown(hide_streamlit_style, unsafe_allow_html=True)
 
-# --- Custom CSS for dark theme ---
+# --- Custom CSS for dark theme + dropdown styling ---
 st.markdown("""
 <style>
     body, .stApp {
@@ -170,43 +170,42 @@ st.markdown("""
         -moz-appearance: textfield;
         appearance: textfield;
     }
-    /* Select box styling */
-    select {
+    /* Dropdown (select) styling – clean & dark */
+    .stSelectbox div[data-baseweb="select"] {
         background: rgba(255,255,255,0.05) !important;
-        border: 1px solid rgba(255,255,255,0.1) !important;
         border-radius: 8px !important;
-        padding: 6px 10px !important;
-        font-size: 13px !important;
-        color: #e0e0e0 !important;
-        width: 100% !important;
-        font-family: inherit !important;
+        border: 1px solid rgba(255,255,255,0.1) !important;
     }
-    select:focus {
+    .stSelectbox div[data-baseweb="select"]:focus-within {
         border-color: #00d4ff !important;
         box-shadow: 0 0 0 3px rgba(0, 150, 255, 0.2) !important;
-        outline: none !important;
     }
-    .stSelectbox {
-        background: transparent !important;
+    /* Dropdown placeholder text */
+    .stSelectbox div[data-baseweb="select"] div[role="button"] {
+        color: #8aa3c0 !important;
+    }
+    /* Dropdown selected value text */
+    .stSelectbox div[data-baseweb="select"] div[role="button"] div[data-value] {
+        color: #e0e0e0 !important;
     }
 </style>
 """, unsafe_allow_html=True)
 
-# --- Define the 10 features with metadata (including dropdown options) ---
+# --- Feature definitions – dropdowns with placeholders ---
 FEATURES_INFO = {
     'service': {
         'label': 'service',
         'type': 'select',
-        'default': 'http',
-        'options': ['http', 'ftp_data', 'smtp', 'pop_3', 'telnet', 'finger', 
+        'options': ['http', 'ftp_data', 'smtp', 'pop_3', 'telnet', 'finger',
                     'ftp', 'domain', 'ssh', 'gopher', 'mtp', 'netbios_ssn', 'other'],
+        'placeholder': 'Select service...',
         'hint': 'The service running on the destination port'
     },
     'flag': {
         'label': 'flag',
         'type': 'select',
-        'default': 'SF',
         'options': ['SF', 'S0', 'REJ', 'RSTO', 'RSTR', 'SH', 'S1', 'S2', 'S3'],
+        'placeholder': 'Select flag...',
         'hint': 'TCP handshake status (SF = normal, S0 = SYN-only, REJ = rejected)'
     },
     'src_bytes': {
@@ -288,28 +287,33 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-st.markdown('<p class="subtitle">Enter the network flow features manually. <strong>Service</strong> and <strong>Flag</strong> are dropdown menus – no typing required!</p>', unsafe_allow_html=True)
+st.markdown('<p class="subtitle">Enter the network flow features manually. <strong>Service</strong> and <strong>Flag</strong> are dropdown menus with placeholders – select from the list.</p>', unsafe_allow_html=True)
 
 error_placeholder = st.empty()
 
-# --- Form with dropdowns ---
+# --- Form with dropdowns using placeholders ---
 with st.form(key="manual_form", clear_on_submit=False):
     cols = st.columns(2)
     input_data = {}
+
     for i, feat in enumerate(FEATURES):
         col = cols[i % 2]
         info = FEATURES_INFO[feat]
-        
+
         if info['type'] == 'select':
-            # Dropdown for service and flag
+            # ✅ Dropdown with placeholder (no default selected)
             val = col.selectbox(
                 label=info['label'],
                 options=info['options'],
-                index=info['options'].index(info['default']),
+                index=None,                      # No default
+                placeholder=info['placeholder'],
                 help=info['hint']
             )
+            # If user hasn't selected anything, default to first option to avoid errors
+            if val is None:
+                val = info['options'][0]
         else:
-            # Number input for others
+            # Number input
             val = col.number_input(
                 label=info['label'],
                 value=float(info['default']),
@@ -328,7 +332,6 @@ if submitted:
             pred, conf, ptype = predict_sample(input_data)
             error_placeholder.empty()
 
-            # Colors
             color_map = {
                 'known': '#ff6b6b' if pred != 'normal' else '#2ecc71',
                 'anomaly': '#ff9f43',
@@ -359,7 +362,6 @@ if submitted:
             </div>
             """, unsafe_allow_html=True)
 
-            # Show input table
             st.subheader("📊 Input Features")
             df_input = pd.DataFrame([input_data])
             st.dataframe(df_input, use_container_width=True, hide_index=True)
